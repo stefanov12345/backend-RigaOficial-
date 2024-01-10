@@ -3,12 +3,21 @@ import asyncHandler from "express-async-handler";
 import { prisma } from "../config/prismaConfig.js";
 
 export const createResidency = asyncHandler(async (req, res) => {
- const {title,description, price, address, country, city, facilities,
- images, userEmail} = req.body.data
+  const {
+    title,
+    description,
+    price,
+    address,
+    country,
+    city,
+    facilities,
+    images,
+    userEmail,
+  } = req.body.data;
 
- console.log(req.body.data)
+  console.log(req.body.data);
 
- try {
+  try {
     const residency = await prisma.residency.create({
       data: {
         title,
@@ -19,15 +28,43 @@ export const createResidency = asyncHandler(async (req, res) => {
         city,
         facilities,
         images,
-        facility,
-        owner : {connect: {email: userEmail}},
+        owner: { connect: { email: userEmail } },
       },
     });
- } catch(err){
-    if(error.code === 'P2002')
-    {
-        throw new Error( 'A residency with addrees already there ')
+
+    res.send({ messege: "residency created succesfully" });
+  } catch (err) {
+    if (err.code === "P2002") {
+      throw new Error("A residency with addrees already there ");
     }
-    throw new Error(err.message)
+    console.log(`############ ${err.message}` )
+    throw new Error(err.message);
+  }
+});
+
+// funcion para tener todas lso documentos de residencias.
+
+ export const getAllResidencies = asyncHandler( async( req, res) => {
+  const residencies = await prisma.residency.findMany({
+    orderBy:{
+      createdAt:"desc",
+    },
+  });
+  res.send(residencies);
+});
+
+// funcion para tener socumentos especificos/residency
+export const getResidency= asyncHandler(async(req, res)=>{
+  const {id} = req.params;
+  try{
+ const resdincy  = await prisma.residency.findUnique({
+  where:{id}
+
+ });
+ res.send(resdincy);
+  }catch(err){
+    throw new Error(err.message);
+
  }
+
 })
