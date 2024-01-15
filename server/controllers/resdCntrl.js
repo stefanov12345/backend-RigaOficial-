@@ -53,7 +53,7 @@ export const createResidency = asyncHandler(async (req, res) => {
   res.send(residencies);
 });
 
-// funcion para tener socumentos especificos/residency
+// funcion para tener documentos especificos/residency
 export const getResidency= asyncHandler(async(req, res)=>{
   const {id} = req.params;
   try{
